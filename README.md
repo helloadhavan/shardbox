@@ -1,2 +1,2 @@
 # shardbox
-A Dataframe for go
+A DataFrame system written in golang, later to be complied into wasm
