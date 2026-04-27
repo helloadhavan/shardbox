@@ -25,6 +25,72 @@ type Frame struct {
 	Columns []Column
 }
 
+type Array struct {
+	Values []any
+	Dtype  string
+}
+
+func (a *Array) Filter(f func(any) bool) {
+	a.Values = []any{}
+	for i := range a.Values {
+		if f(a.Values[i]) {
+			a.Values = append(a.Values, a.Values[i])
+		} else {
+		}
+	}
+}
+
+func (a *Array) Get(i int) any {
+	return a.Values[i]
+}
+
+func (a *Array) Insert(index int, val any) {
+	a.Values = append(a.Values, 0)
+	copy(a.Values[index+1:], a.Values[index:])
+	a.Values[index] = val
+}
+
+func (a *Array) Len() int {
+	return len(a.Values)
+}
+
+func (a *Array) Swap(i, j int) {
+	a.Values[i], a.Values[j] = a.Values[j], a.Values[i]
+}
+
+func (a *Array) Mean() (float64, error) {
+	if a.Dtype != "int" && a.Dtype != "long" && a.Dtype != "float" {
+		return 0, fmt.Errorf("Dtype %q is not suitable for mean", a.Dtype)
+	}
+
+	var sum float64
+	var count int
+
+	for _, v := range a.Values {
+		switch n := v.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			return 0, fmt.Errorf("non-numeric value: %v", v)
+		}
+		count++
+	}
+
+	if count == 0 {
+		return 0, fmt.Errorf("cannot compute mean of empty Array")
+	}
+
+	return sum / float64(count), nil
+}
+
+func (a *Array) slice(start, end int) []any {
+	return a.Values[start:end]
+}
+
 func NewFrame(names []string) *Frame {
 	cols := make([]Column, len(names))
 	for i, n := range names {
@@ -40,12 +106,12 @@ func NewFrame(names []string) *Frame {
 	}
 }
 
-func (f *Frame) AppendRow(values []any) {
-	if len(values) != len(f.Columns) {
+func (f *Frame) AppendRow(Values []any) {
+	if len(Values) != len(f.Columns) {
 		panic("row length does not match number of columns")
 	}
 
-	for i, v := range values {
+	for i, v := range Values {
 		f.Columns[i].Values = append(f.Columns[i].Values, v)
 	}
 }
@@ -165,11 +231,11 @@ func fromSliceOfMaps(d []map[string]any) Frame {
 
 	out := NewFrame(names)
 	for _, row := range d {
-		values := make([]any, len(names))
+		Values := make([]any, len(names))
 		for i, name := range names {
-			values[i] = row[name]
+			Values[i] = row[name]
 		}
-		out.AppendRow(values)
+		out.AppendRow(Values)
 	}
 
 	return *out
@@ -229,11 +295,11 @@ func loadJSONLFrame(filename string) Frame {
 			out = NewFrame(names)
 		}
 
-		values := make([]any, len(names))
+		Values := make([]any, len(names))
 		for i, name := range names {
-			values[i] = row[name]
+			Values[i] = row[name]
 		}
-		out.AppendRow(values)
+		out.AppendRow(Values)
 		return nil
 	})
 
@@ -259,12 +325,21 @@ func loadCSV(filename string) Frame {
 	out := NewFrame(names)
 
 	for _, row := range records[1:] {
-		values := make([]any, len(row))
+		Values := make([]any, len(row))
 		for i, v := range row {
-			values[i] = v
+			Values[i] = v
 		}
-		out.AppendRow(values)
+		out.AppendRow(Values)
 	}
 
 	return *out
+}
+
+func (f *Frame) ColPtr(name string) *[]any {
+	for i := range f.Columns {
+		if f.Columns[i].ID == name {
+			return &f.Columns[i].Values
+		}
+	}
+	return nil
 }
