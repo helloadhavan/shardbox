@@ -33,16 +33,18 @@ This project started as a learning exercise to better understand Go's type syste
 - Clone and truncate DataFrames
 - Print DataFrames in a simple table view
 - Load DataFrames from:
-  - **CSV** files
-  - **JSON** files (array of objects)
-  - **JSONL** (newline-delimited JSON)
-  - Go in-memory `[]map[string]any` data structures
+    - **CSV** files
+    - **JSON** files (array of objects)
+    - **JSONL** (newline-delimited JSON)
+    - Go in-memory `[]map[string]any` data structures
 
 ---
 
 ## Quickstart Example
 
 ```go
+package main
+
 import "github.com/helloadhavan/shardbox"
 
 func main() {

@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"awesomeProject1/shardbox"
+	"shardbox"
 	"testing"
 )
 
