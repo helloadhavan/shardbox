@@ -3,7 +3,7 @@ package tests
 import (
 	"encoding/json"
 	"os"
-	"shardbox/src"
+	"shardbox"
 	"testing"
 )
 

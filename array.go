@@ -105,3 +105,7 @@ func (a *Array) Delete(i int) {
 func (a *Array) Join(other Array) {
 	a.Values = append(a.Values, other.Values...)
 }
+
+func Copy(a Array) *Array {
+	return &a
+}
