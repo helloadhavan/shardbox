@@ -10,13 +10,13 @@
 
 ## Overview
 
-**shardbox** is a minimal DataFrame system written in Go (Golang). It provides basic DataFrame capabilities—such as column and row operations, cloning, truncating, and file IO (CSV, JSON, and JSONL)—and is designed to be a foundational framework for data manipulation. The goal is to eventually allow compiling this system to WebAssembly (wasm), enabling browser and edge device interoperability.
+**shardbox** is a minimal DataFrame system written in Go. It provides basic DataFrame capabilities—such as column and row operations, cloning, truncating, and file IO (CSV, JSON, and JSONL)—and is designed to be a foundational framework for data manipulation. The goal is to eventually allow compiling this system to WebAssembly (wasm), enabling browser and edge device interoperability.
 
 ---
 
 ## Project Idea & Vision
 
-Many data scientists and engineers use DataFrames in Python (pandas) or R. However, Go lacks a "batteries-included" DataFrame library that is easy for beginners and easy to compile to wasm for web apps.
+Many data scientists and engineers use DataFrames in Python (pandas) or R. However, Go lacks a DataFrame library that is easy for beginners and easy to compile to wasm for web apps.
 
 This project started as a learning exercise to better understand Go's type system and file handling. The planned future is:
 - Build out core DataFrame features (row/column add/drop, printing, importing).
