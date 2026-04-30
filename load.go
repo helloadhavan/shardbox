@@ -11,12 +11,14 @@ import (
 	"strings"
 )
 
+// Load creates a Frame from either in-memory data or a file.
+// If src is non-nil, it takes precedence over filename.
+// Supported file formats: JSON, JSONL, CSV, XML.
 func Load(src any, filename string) Frame {
 	if filename == "" && src == nil {
 		return Frame{}
 	}
 
-	// Load from in-memory data
 	if src != nil {
 		if d, ok := src.([]map[string]any); ok {
 			return fromSliceOfMaps(d)
@@ -24,7 +26,6 @@ func Load(src any, filename string) Frame {
 		return Frame{}
 	}
 
-	// Load from file
 	ext := strings.ToLower(filepath.Ext(filename))
 	switch ext {
 	case ".json":
@@ -40,6 +41,8 @@ func Load(src any, filename string) Frame {
 	}
 }
 
+// fromSliceOfMaps converts a slice of maps into a Frame.
+// Column names are inferred from map keys and sorted.
 func fromSliceOfMaps(d []map[string]any) Frame {
 	if len(d) == 0 {
 		return Frame{}
@@ -63,6 +66,7 @@ func fromSliceOfMaps(d []map[string]any) Frame {
 	return *out
 }
 
+// loadJSON loads a JSON file containing an array of objects into a Frame.
 func loadJSON(filename string) Frame {
 	raw, err := os.ReadFile(filename)
 	if err != nil {
@@ -77,6 +81,7 @@ func loadJSON(filename string) Frame {
 	return fromSliceOfMaps(d)
 }
 
+// loadJSONL streams a JSON Lines file and calls handle for each decoded row.
 func loadJSONL(filename string, handle func(map[string]any) error) error {
 	file, err := os.Open(filename)
 	if err != nil {
@@ -103,6 +108,7 @@ func loadJSONL(filename string, handle func(map[string]any) error) error {
 	return nil
 }
 
+// loadJSONLFrame loads a JSON Lines file into a Frame.
 func loadJSONLFrame(filename string) Frame {
 	var out *Frame
 	var names []string
@@ -130,6 +136,8 @@ func loadJSONLFrame(filename string) Frame {
 	return *out
 }
 
+// loadCSV loads a CSV file into a Frame.
+// The first row is treated as the header.
 func loadCSV(filename string) Frame {
 	f, err := os.Open(filename)
 	if err != nil {
@@ -156,6 +164,7 @@ func loadCSV(filename string) Frame {
 	return *out
 }
 
+// loadXML loads an XML file in the shardbox frame format into a Frame.
 func loadXML(filename string) Frame {
 	raw, err := os.ReadFile(filename)
 	if err != nil {
@@ -167,7 +176,6 @@ func loadXML(filename string) Frame {
 		return Frame{}
 	}
 
-	// collect ordered column names from first row
 	seen := map[string]bool{}
 	names := []string{}
 	for _, field := range xf.Rows[0].Fields {

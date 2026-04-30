@@ -1,24 +1,25 @@
 package shardbox
 
-import (
-	"fmt"
-)
+import "fmt"
 
+// Header stores the column names for a Frame.
 type Header struct {
 	Names []string
 }
 
+// Frame represents a simple table-like data structure composed of
+// named columns with equal-length Arrays.
 type Frame struct {
 	Header  Header
 	Columns []Array
 }
 
+// NewFrame creates a new Frame with the given column names and
+// initializes empty columns.
 func NewFrame(names []string) *Frame {
 	cols := make([]Array, len(names))
 	for i := range names {
-		cols[i] = Array{
-			Values: []any{},
-		}
+		cols[i] = Array{Values: []any{}}
 	}
 
 	return &Frame{
@@ -27,6 +28,8 @@ func NewFrame(names []string) *Frame {
 	}
 }
 
+// AppendRow adds a new row of values to the Frame.
+// Panics if the number of values does not match the number of columns.
 func (f *Frame) AppendRow(values []any) {
 	if len(values) != len(f.Columns) {
 		panic("row length does not match number of columns")
@@ -37,14 +40,16 @@ func (f *Frame) AppendRow(values []any) {
 	}
 }
 
+// GetRow returns the values of row i as a slice.
 func (f *Frame) GetRow(i int) []any {
 	out := []any{}
-	for _, j := range f.Columns {
-		out = append(out, j.Get(i))
+	for _, col := range f.Columns {
+		out = append(out, col.Get(i))
 	}
 	return out
 }
 
+// Rows returns the number of rows in the Frame.
 func (f *Frame) Rows() int {
 	if len(f.Columns) == 0 {
 		return 0
@@ -52,6 +57,8 @@ func (f *Frame) Rows() int {
 	return len(f.Columns[0].Values)
 }
 
+// Col returns the Array for the column with the given name.
+// If the column does not exist, nil is returned.
 func (f *Frame) Col(name string) *Array {
 	for i, n := range f.Header.Names {
 		if n == name {
@@ -61,6 +68,7 @@ func (f *Frame) Col(name string) *Array {
 	return nil
 }
 
+// Clone creates a deep copy of the Frame, including column values.
 func (f *Frame) Clone() *Frame {
 	nf := &Frame{
 		Header: Header{
@@ -79,6 +87,8 @@ func (f *Frame) Clone() *Frame {
 	return nf
 }
 
+// Truncate reduces the Frame to at most n rows.
+// If n is negative or larger than the current row count, no truncation occurs.
 func (f *Frame) Truncate(n int) {
 	if n < 0 {
 		n = 0
@@ -92,6 +102,7 @@ func (f *Frame) Truncate(n int) {
 	}
 }
 
+// PrintFrame prints the Frame in a tabular, human-readable format.
 func (f *Frame) PrintFrame() {
 	for _, name := range f.Header.Names {
 		if len(name) < 12 {
@@ -117,6 +128,7 @@ func (f *Frame) PrintFrame() {
 	fmt.Printf("(%d rows)\n", f.Rows())
 }
 
+// ColPtr is an alias of Col and returns a pointer to the named column Array.
 func (f *Frame) ColPtr(name string) *Array {
 	for i, n := range f.Header.Names {
 		if n == name {

@@ -7,11 +7,15 @@ import (
 	"strings"
 )
 
+// Array represents a one-dimensional collection of values with an optional
+// inferred or user-defined data type.
 type Array struct {
 	Values []any
 	Dtype  string
 }
 
+// Filter removes all elements for which the predicate function f returns false.
+// The Array is modified in place.
 func (a *Array) Filter(f func(any) bool) {
 	var newValues []any
 	for i := range a.Values {
@@ -22,6 +26,8 @@ func (a *Array) Filter(f func(any) bool) {
 	a.Values = newValues
 }
 
+// Map applies the function f to every element in the Array and replaces
+// the contents with the returned values.
 func (a *Array) Map(f func(any) any) {
 	var newValues []any
 	for i := range a.Values {
@@ -30,28 +36,36 @@ func (a *Array) Map(f func(any) any) {
 	a.Values = newValues
 }
 
+// Get returns the value at index i.
+// If the index is out of bounds, an error is returned instead.
 func (a *Array) Get(i int) any {
 	if len(a.Values)-1 <= i {
 		return a.Values[i]
-	} else {
-		return fmt.Errorf("index %d out of bounds (len=%d)", i, len(a.Values))
 	}
+	return fmt.Errorf("index %d out of bounds (len=%d)", i, len(a.Values))
 }
 
+// Insert inserts a value at the specified index, shifting elements to the right.
 func (a *Array) Insert(index int, val any) {
 	a.Values = append(a.Values, nil)
 	copy(a.Values[index+1:], a.Values[index:])
 	a.Values[index] = val
 }
 
+// Len returns the number of elements in the Array.
 func (a *Array) Len() int {
 	return len(a.Values)
 }
 
+// Swap exchanges the values at indices i and j.
+// This allows Array to be used with sort utilities.
 func (a *Array) Swap(i, j int) {
 	a.Values[i], a.Values[j] = a.Values[j], a.Values[i]
 }
 
+// Mean computes the arithmetic mean of the Array.
+// Supported numeric types are int, int64, and float64.
+// An error is returned for non-numeric values or empty Arrays.
 func (a *Array) Mean() (float64, error) {
 	if a.Dtype == "" {
 		seen := map[string]bool{}
@@ -94,18 +108,61 @@ func (a *Array) Mean() (float64, error) {
 	return sum / float64(count), nil
 }
 
+// Slice returns a subslice of the Array values from start (inclusive)
+// to end (exclusive).
 func (a *Array) Slice(start, end int) []any {
 	return a.Values[start:end]
 }
 
+// Delete removes the element at index i from the Array.
 func (a *Array) Delete(i int) {
 	a.Values = append(a.Values[:i], a.Values[i+1:]...)
 }
 
+// Join appends all values from another Array to this Array.
 func (a *Array) Join(other Array) {
 	a.Values = append(a.Values, other.Values...)
 }
 
-func Copy(a Array) *Array {
-	return &a
+// Median computes the median value of the Array using the provided
+// sortFunc to derive sortable numeric keys.
+// The Array is sorted in place.
+func (a *Array) Median(sortFunc func(interface{}) int) float64 {
+	n := a.Len()
+	if n == 0 {
+		return 0.0
+	}
+
+	sort.Slice(a.Values, func(i, j int) bool {
+		return sortFunc(a.Values[i]) < sortFunc(a.Values[j])
+	})
+
+	if n%2 == 1 {
+		return float64(sortFunc(a.Values[n/2]))
+	}
+
+	m1 := sortFunc(a.Values[n/2-1])
+	m2 := sortFunc(a.Values[n/2])
+	return float64(m1+m2) / 2.0
+}
+
+// Mode returns the most frequently occurring value in the Array.
+// If the Array is empty, nil is returned.
+func (a *Array) Mode() any {
+	if len(a.Values) == 0 {
+		return nil
+	}
+
+	score := map[any]int{}
+	var mode any
+	maxFreq := 0
+
+	for _, val := range a.Values {
+		score[val]++
+		if score[val] > maxFreq {
+			maxFreq = score[val]
+			mode = val
+		}
+	}
+	return mode
 }

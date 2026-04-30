@@ -10,7 +10,7 @@
 
 ## Overview
 
-**shardbox** is a minimal DataFrame system written in Go. It provides basic DataFrame capabilities—such as column and row operations, cloning, truncating, and file IO (CSV, JSON, and JSONL)—and is designed to be a foundational framework for data manipulation. The goal is to eventually allow compiling this system to WebAssembly (wasm), enabling browser and edge device interoperability.
+**shardbox** is a DataFrame lib written in Go. It provides basic DataFrame fuctions such as column and row operations, cloning, truncating, and file IO (CSV, JSON, and JSONL)—and is designed to be a foundational framework for data manipulation. The goal is to eventually allow compiling this system to WebAssembly (wasm), enabling browser and edge device interoperability.
 
 ---
 
@@ -36,6 +36,7 @@ This project started as a learning exercise to better understand Go's type syste
     - **CSV** files
     - **JSON** files (array of objects)
     - **JSONL** (newline-delimited JSON)
+    - **XML** (Data in tags)
     - Go in-memory `[]map[string]any` data structures
 
 ---
@@ -72,17 +73,17 @@ func main() {
 
 - [x] Basic data structure & CLI output
 - [x] CSV / JSON / JSONL file loading
+- [x] Basic DataFrame operations (filter, map, select)
 - [ ] Type safety improvements
-- [ ] File save functionality
+- [ ] File save improvements
 - [ ] Performance benchmarking
-- [ ] More DataFrame operations (filter, map, select)
 - [ ] Go package + wasm build
 
 ---
 
 ## Contributing
 
-Pull requests, suggestions, and issues are welcome! See [`main.go`](main.go) for implementation details.
+Pull requests, suggestions, and issues are welcome! See [`frame.go`](main.go) for implementation details.
 
 Beginner contributions are especially encouraged! If you're new to Go, feel free to read the code, suggest improvements, or add documentation.
 
@@ -90,10 +91,10 @@ Beginner contributions are especially encouraged! If you're new to Go, feel free
 
 ## License
 
-[GNU GENERAL PUBLIC LICENSE GPL](LICENSE)
+[MIT](LICENSE)
 
 ---
 
 ## Acknowledgements
 
-Started as a Go learning project—there are many improvements possible. Inspired by pandas, DataFrames.jl, and gorse.
+Started as a Go learning project—there are many improvements possible. Inspired by pandas and DuckDB.
