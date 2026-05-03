@@ -9,8 +9,8 @@ import (
 
 // helpers
 
-func makeTestFrame() *src.Frame {
-	f := src.NewFrame([]string{"name", "age", "score"})
+func makeTestFrame() *shardbox.Frame {
+	f := shardbox.NewFrame([]string{"name", "age", "score"})
 	f.AppendRow([]any{"alice", 30, 90.5})
 	f.AppendRow([]any{"bob", 25, 85.0})
 	f.AppendRow([]any{"carol", 35, 92.0})
@@ -37,7 +37,7 @@ func writeTempFile(t *testing.T, ext, content string) string {
 // --- Array tests ---
 
 func TestArrayFilter(t *testing.T) {
-	a := src.Array{Values: []any{1, 2, 3, 4, 5}}
+	a := shardbox.Array{Values: []any{1, 2, 3, 4, 5}}
 	a.Filter(func(v any) bool { return v.(int) > 2 })
 	if len(a.Values) != 3 || a.Values[0].(int) != 3 {
 		t.Errorf("unexpected filter result: %v", a.Values)
@@ -45,7 +45,7 @@ func TestArrayFilter(t *testing.T) {
 }
 
 func TestArrayMap(t *testing.T) {
-	a := src.Array{Values: []any{1, 2, 3}}
+	a := shardbox.Array{Values: []any{1, 2, 3}}
 	a.Map(func(v any) any { return v.(int) * 2 })
 	if a.Values[2].(int) != 6 {
 		t.Errorf("unexpected map result: %v", a.Values)
@@ -53,7 +53,7 @@ func TestArrayMap(t *testing.T) {
 }
 
 func TestArrayDelete(t *testing.T) {
-	a := src.Array{Values: []any{"a", "b", "c"}}
+	a := shardbox.Array{Values: []any{"a", "b", "c"}}
 	a.Delete(1)
 	if len(a.Values) != 2 || a.Values[1] != "c" {
 		t.Errorf("unexpected delete result: %v", a.Values)
@@ -61,8 +61,8 @@ func TestArrayDelete(t *testing.T) {
 }
 
 func TestArrayJoin(t *testing.T) {
-	a := src.Array{Values: []any{1, 2}}
-	b := src.Array{Values: []any{3, 4}}
+	a := shardbox.Array{Values: []any{1, 2}}
+	b := shardbox.Array{Values: []any{3, 4}}
 	a.Join(b)
 	if len(a.Values) != 4 || a.Values[3] != 4 {
 		t.Errorf("unexpected join result: %v", a.Values)
@@ -70,7 +70,7 @@ func TestArrayJoin(t *testing.T) {
 }
 
 func TestArrayMeanWrongDtype(t *testing.T) {
-	a := src.Array{Values: []any{"a", "b"}, Dtype: "string"}
+	a := shardbox.Array{Values: []any{"a", "b"}, Dtype: "string"}
 	if _, err := a.Mean(); err == nil {
 		t.Error("expected error for non-numeric dtype")
 	}
@@ -86,7 +86,7 @@ func TestFrameAppendAndRows(t *testing.T) {
 }
 
 func TestFrameAppendRowPanicsOnMismatch(t *testing.T) {
-	f := src.NewFrame([]string{"a", "b"})
+	f := shardbox.NewFrame([]string{"a", "b"})
 	defer func() {
 		if r := recover(); r == nil {
 			t.Error("expected panic on row length mismatch")
@@ -136,7 +136,7 @@ func TestFrameTruncate(t *testing.T) {
 
 func TestLoadCSV(t *testing.T) {
 	path := writeTempFile(t, ".csv", "name,age\nalice,30\nbob,25\n")
-	frame := src.Load(nil, path)
+	frame := shardbox.Load(nil, path)
 	if frame.Rows() != 2 || frame.Col("name").Values[0] != "alice" {
 		t.Errorf("unexpected CSV load result")
 	}
@@ -145,7 +145,7 @@ func TestLoadCSV(t *testing.T) {
 func TestLoadJSON(t *testing.T) {
 	data := []map[string]any{{"name": "alice", "age": float64(30)}}
 	raw, _ := json.Marshal(data)
-	frame := src.Load(nil, writeTempFile(t, ".json", string(raw)))
+	frame := shardbox.Load(nil, writeTempFile(t, ".json", string(raw)))
 	if frame.Rows() != 1 {
 		t.Errorf("expected 1 row, got %d", frame.Rows())
 	}
@@ -153,7 +153,7 @@ func TestLoadJSON(t *testing.T) {
 
 func TestLoadJSONL(t *testing.T) {
 	content := `{"name":"alice","age":30}` + "\n" + `{"name":"bob","age":25}` + "\n"
-	frame := src.Load(nil, writeTempFile(t, ".jsonl", content))
+	frame := shardbox.Load(nil, writeTempFile(t, ".jsonl", content))
 	if frame.Rows() != 2 {
 		t.Errorf("expected 2 rows, got %d", frame.Rows())
 	}
@@ -161,7 +161,7 @@ func TestLoadJSONL(t *testing.T) {
 
 func TestLoadFromSliceOfMaps(t *testing.T) {
 	data := []map[string]any{{"x": 1, "y": 2}, {"x": 3, "y": 4}}
-	frame := src.Load(data, "")
+	frame := shardbox.Load(data, "")
 	if frame.Rows() != 2 {
 		t.Errorf("expected 2 rows, got %d", frame.Rows())
 	}
