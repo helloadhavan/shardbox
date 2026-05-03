@@ -11,4 +11,8 @@
 //
 // This package is intended as a learning project and
 // straightforward behavior rather than performance or completness.
+// Example:
+// ```go
+//
+// ```
 package shardbox

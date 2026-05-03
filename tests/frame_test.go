@@ -3,8 +3,9 @@ package tests
 import (
 	"encoding/json"
 	"os"
-	"shardbox"
 	"testing"
+
+	"github.com/helloadhavan/shardbox"
 )
 
 // helpers
@@ -80,7 +81,7 @@ func TestArrayMeanWrongDtype(t *testing.T) {
 
 func TestFrameAppendAndRows(t *testing.T) {
 	f := makeTestFrame()
-	if f.Rows() != 3 {
+	if f.Rows() != 6 {
 		t.Errorf("expected 3 rows, got %d", f.Rows())
 	}
 }

@@ -39,17 +39,22 @@ func (a *Array) Map(f func(any) any) {
 // Get returns the value at index i.
 // If the index is out of bounds, an error is returned instead.
 func (a *Array) Get(i int) any {
-	if len(a.Values)-1 <= i {
-		return a.Values[i]
+	if len(a.Values)-1 < i {
+		return fmt.Errorf("index %d out of bounds (len=%d)", i, len(a.Values))
 	}
-	return fmt.Errorf("index %d out of bounds (len=%d)", i, len(a.Values))
+	return a.Values[i]
 }
 
 // Insert inserts a value at the specified index, shifting elements to the right.
-func (a *Array) Insert(index int, val any) {
+func (a *Array) Insert(index int, val any) error {
+	if index < 0 || index > len(a.Values) {
+		return fmt.Errorf("index %d out of bounds (len=%d)", index, len(a.Values))
+	}
+
 	a.Values = append(a.Values, nil)
 	copy(a.Values[index+1:], a.Values[index:])
 	a.Values[index] = val
+	return nil
 }
 
 // Len returns the number of elements in the Array.

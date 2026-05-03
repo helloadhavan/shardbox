@@ -2,8 +2,9 @@ package tests
 
 import (
 	"fmt"
-	"shardbox"
 	"time"
+
+	"github.com/helloadhavan/shardbox"
 )
 
 func main() {

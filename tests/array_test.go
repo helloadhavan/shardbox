@@ -1,8 +1,9 @@
 package tests
 
 import (
-	"shardbox"
 	"testing"
+
+	"github.com/helloadhavan/shardbox"
 )
 
 func TestArrayGet(t *testing.T) {
