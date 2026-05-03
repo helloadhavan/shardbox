@@ -171,3 +171,56 @@ func (a *Array) Mode() any {
 	}
 	return mode
 }
+
+// Max returns the highest value returned by statFunc
+// statFunc is a function to determine the value of any type
+// If you have not created a custom stat function then use CommonStatFunc instead
+func (a *Array) Max(statFunc func(any) float64) any {
+	var m map[float64]any
+	var maX float64 = 0
+	for _, v := range a.Values {
+		m[statFunc(v)] = v
+	}
+	for k, _ := range m {
+		if k > maX {
+			maX = k
+		}
+	}
+	return m[maX]
+}
+
+// Min returns the lowest value returned by statFunc
+// statFunc is a function to determine the value of any type
+// If you have not created a custom stat function then use CommonStatFunc insted
+func (a *Array) Min(statFunc func(any) float64) any {
+	var m map[float64]any
+	var miN float64 = 0
+	for _, v := range a.Values {
+		m[statFunc(v)] = v
+	}
+	for k, _ := range m {
+		if k > miN {
+			miN = k
+		}
+	}
+	return m[miN]
+}
+
+func CommonStatFunc(inp any) float64 {
+	switch v := inp.(type) {
+	case int:
+		return float64(v)
+	case int64:
+		return float64(v)
+	case float64:
+		return v
+	case string:
+		return float64(len(v))
+	case bool:
+		return 0.0
+	case nil:
+		return 0.0
+	default:
+		return 0.0
+	}
+}

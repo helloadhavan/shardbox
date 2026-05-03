@@ -137,3 +137,8 @@ func (f *Frame) ColPtr(name string) *Array {
 	}
 	return nil
 }
+
+func (f *Frame) appendCol(header_name string, col Array) {
+	f.Columns = append(f.Columns, col)
+	f.Header.Names = append(f.Header.Names, header_name)
+}
